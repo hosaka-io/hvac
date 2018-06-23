@@ -11,7 +11,7 @@
 (defn set-status [{:keys [status]}]
   (doall
    (map
-    (fn [[p v]] i
+    (fn [[p v]]
       (println (str "\tWrite: " p " -> " v))
       ;;(Gpio/digitalWrite p v)
       )

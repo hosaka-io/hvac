@@ -16,10 +16,10 @@
 
   (start [this]
     (do
-      (rabbitmq/declare-task-queue rabbitmq "task.hvac.state.update.temp")
+      (rabbitmq/declare-task-queue rabbitmq "task.hvac.state.update.temperature")
       (rabbitmq/declare-task-queue rabbitmq "task.hvac.state.update.mode")
       (rabbitmq/declare-task-queue rabbitmq "task.hvac.state.update")
-      (let [temp-stream (rabbitmq/queue-subscription rabbitmq "task.hvac.state.update.temp")
+      (let [temp-stream (rabbitmq/queue-subscription rabbitmq "task.hvac.state.update.temperature")
             state-stream (rabbitmq/queue-subscription rabbitmq "task.hvac.state.update")
             mode-stream (rabbitmq/queue-subscription rabbitmq "task.hvac.state.update.mode")]
         (s/consume (fn [{:keys [response body]}]
@@ -30,7 +30,7 @@
                      (do
                        (d/success! response true)
                        (when-let [temp (parseInteger body)]
-                         (orchestrator/update-state orchestrator {:target body})))) temp-stream)
+                         (orchestrator/update-state orchestrator {:target temp})))) temp-stream)
         (s/consume (fn [{:keys [response body]}]
                      (do
                        (d/success! response true)

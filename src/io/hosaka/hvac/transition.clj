@@ -11,7 +11,7 @@
      temp)))
 
 (defn delta [f {:keys [target readings]}]
-  (let [temps (filter number? (map #(-> % second :temp) readings))]
+  (let [temps (filter number? (map #(-> % second :temperature) readings))]
     (if (empty? temps)
       nil
       (- (apply f temps) target))))

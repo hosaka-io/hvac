@@ -10,7 +10,7 @@
     (assoc this
            :state-map (atom {:mode :off
                              :target 72
-                             :readings {:init {:temp 72 :time (time/instant)}}
+                             :readings {:init {:temperature 72 :time (time/instant)}}
                              :status :off})))
   (stop [this]
     this))

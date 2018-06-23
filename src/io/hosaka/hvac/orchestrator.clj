@@ -11,7 +11,7 @@
 
 (defn dispaly [state]
   (vector
-   (format "T: %3.1f %2d" (or (-> state :readings :local :temp) 0.01) (-> state :target))
+   (format "T: %3.1f %2d" (or (-> state :readings :local :temperature) 0.01) (-> state :target))
    (format "Mode: %s / %s" (-> state :mode name) (-> state :status name))
    (time/format "EEE dd h:mm:ssa" (-> state :now (time/local-date-time (time/zone-id))))))
 
@@ -25,7 +25,7 @@
           event-stream (s/periodically 30000 get-state)
           display-stream (s/periodically 1800 get-state)]
       (s/consume (partial state/update-reading (:state this) :local)
-                 (s/map #(hash-map :temp %) temp-stream))
+                 (s/map #(hash-map :temperature %) temp-stream))
       (s/consume (partial display/show display)
                  (s/map dispaly display-stream))
       (s/consume controller/set-status controller-stream)

@@ -1,14 +1,19 @@
 (ns io.hosaka.hvac.orchestrator
   (:require [com.stuartsierra.component   :as component]
             [manifold.stream              :as s]
+            [java-time :as time]
             [io.hosaka.hvac.display       :as display]
             [io.hosaka.hvac.controller    :as controller]
             [io.hosaka.hvac.state         :as state]
             [io.hosaka.common.rabbitmq    :as rabbitmq]))
 
+
+
 (defn dispaly [state]
   (vector
-   (format "T: %3.1f" (or (-> state :readings :local :temp) 0.01))))
+   (format "T: %3.1f %2d" (or (-> state :readings :local :temp) 0.01) (-> state :target))
+   (format "Mode: %s / %s" (-> state :mode name) (-> state :status name))
+   (time/format "EEE dd h:mm:ssa" (-> state :now (time/local-date-time (time/zone-id))))))
 
 (defrecord Orchestrator [state display streams rabbitmq]
   component/Lifecycle

@@ -1,5 +1,6 @@
 (ns io.hosaka.hvac.controller
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str])
+  (:import [com.pi4j.wiringpi Gpio]))
 
 (def status-map {:off   {23 1, 22 1, 27 1, 17 1}
                  :fan   {23 0, 22 1, 27 1, 17 1}
@@ -10,7 +11,8 @@
 (defn set-status [{:keys [status]}]
   (doall
    (map
-    (fn [[p v]] (println (str "\tWrite: " p " -> " v))
+    (fn [[p v]] i
+      (println (str "\tWrite: " p " -> " v))
       ;;(Gpio/digitalWrite p v)
       )
     (sort-by first

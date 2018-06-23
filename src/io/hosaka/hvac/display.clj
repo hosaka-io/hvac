@@ -1,13 +1,19 @@
 (ns io.hosaka.hvac.display
   (:require [com.stuartsierra.component   :as component])
-  (:import [java.time.format DateTimeFormatter]
-           [java.time LocalDateTime]))
+  (:import [com.pi4j.component.lcd.impl I2CLcdDisplay]))
+
+(defn space-pad [l s]
+  (loop [p s]
+    (if (>= (count p) l)
+      p
+      (recur (str p " ")))))
 
 (defn show [{:keys [lcd]} lines]
   (loop [lines lines
          line-number 0]
     (if (not (empty? lines))
       (do
+;;        (.write lcd line-number 0 (space-pad 20 (first lines)))
         (println (str "\t" (first lines)))
         (recur (rest lines) (+ 1 line-number))))))
 

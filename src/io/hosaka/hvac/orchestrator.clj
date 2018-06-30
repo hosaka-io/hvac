@@ -1,11 +1,12 @@
 (ns io.hosaka.hvac.orchestrator
-  (:require [com.stuartsierra.component   :as component]
-            [manifold.stream              :as s]
-            [java-time :as time]
-            [io.hosaka.hvac.display       :as display]
-            [io.hosaka.hvac.controller    :as controller]
-            [io.hosaka.hvac.state         :as state]
-            [io.hosaka.common.rabbitmq    :as rabbitmq]))
+  (:require [com.stuartsierra.component :as component]
+            [clojure.string             :refer [split]]
+            [manifold.stream            :as s]
+            [java-time                  :as time]
+            [io.hosaka.hvac.display     :as display]
+            [io.hosaka.hvac.controller  :as controller]
+            [io.hosaka.hvac.state       :as state]
+            [io.hosaka.common.rabbitmq  :as rabbitmq]))
 
 
 
@@ -48,3 +49,6 @@
     (state/update-mode state mode))
   (if target
     (state/update-target state target)))
+
+(defn rcv-reading [{:keys [state]} routing-key body]
+  (state/update-reading state (-> routing-key (split #"\.") second keyword) body))

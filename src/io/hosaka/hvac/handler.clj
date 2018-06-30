@@ -16,12 +16,18 @@
 
   (start [this]
     (do
-      (rabbitmq/declare-task-queue rabbitmq "task.hvac.state.update.temperature")
-      (rabbitmq/declare-task-queue rabbitmq "task.hvac.state.update.mode")
-      (rabbitmq/declare-task-queue rabbitmq "task.hvac.state.update")
-      (let [temp-stream (rabbitmq/queue-subscription rabbitmq "task.hvac.state.update.temperature")
-            state-stream (rabbitmq/queue-subscription rabbitmq "task.hvac.state.update")
-            mode-stream (rabbitmq/queue-subscription rabbitmq "task.hvac.state.update.mode")]
+      (rabbitmq/declare-task-queue rabbitmq "tasks.hvac.state.update.temperature")
+      (rabbitmq/declare-task-queue rabbitmq "tasks.hvac.state.update.mode")
+      (rabbitmq/declare-task-queue rabbitmq "tasks.hvac.state.update")
+      (let [reading-event-queue (rabbitmq/decalre-event-queue rabbitmq "events.*.reading")
+            reading-stream (rabbitmq/queue-subscription rabbitmq reading-event-queue)
+            temp-stream (rabbitmq/queue-subscription rabbitmq "tasks.hvac.state.update.temperature")
+            state-stream (rabbitmq/queue-subscription rabbitmq "tasks.hvac.state.update")
+            mode-stream (rabbitmq/queue-subscription rabbitmq "tasks.hvac.state.update.mode")]
+        (s/consume (fn [{:keys [response body routing-key]}]
+                     (do
+                       (d/success! response true)
+                       (orchestrator/rcv-reading orchestrator routing-key body))) reading-stream)
         (s/consume (fn [{:keys [response body]}]
                      (do
                        (d/success! response true)

@@ -128,6 +128,17 @@
      (lq/bind channel queue-name "amq.topic" {:routing-key queue-name})
      (rmq/close channel))))
 
+(defn decalre-event-queue
+  ([rabbitmq topic] (decalre-event-queue rabbitmq topic {}))
+  ([rabbitmq topic options]
+   (let [channel (get-channel rabbitmq)
+         queue-name (lq/declare-server-named channel (merge {:exclusive true} options))]
+     (lq/bind channel queue-name "amq.topic" {:routing-key topic})
+     (rmq/close channel)
+     queue-name))
+
+
+  )
 
 
 (comment

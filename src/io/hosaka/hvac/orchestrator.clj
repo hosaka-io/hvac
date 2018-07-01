@@ -12,7 +12,12 @@
 
 (defn dispaly [state]
   (vector
-   (format "T: %3.1f %2d" (or (-> state :readings :local :temperature) 0.01) (-> state :target))
+   (format "T: %2d %3.1f %s"
+           (-> state :target)
+           (or (-> state :readings :local :temperature) 0.01)
+           (if-let [r (-> state :readings :bedroom_sensor :temperature)]
+             (format "%3.1f" r)
+             ""))
    (format "Mode: %s / %s" (-> state :mode name) (-> state :status name))
    (time/format "EEE dd h:mm:ssa" (-> state :now (time/local-date-time (time/zone-id))))))
 
